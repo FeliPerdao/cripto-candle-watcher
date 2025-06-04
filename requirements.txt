@@ -1,0 +1,7 @@
+tk
+matplotlib
+pandas
+numpy
+scikit-learn
+python-binance
+preferredsoundplayer
