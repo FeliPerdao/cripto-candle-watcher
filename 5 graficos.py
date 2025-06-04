@@ -9,6 +9,7 @@ import threading
 import time
 from datetime import datetime
 from matplotlib.figure import Figure
+from preferredsoundplayer import *
 
 # Inicialización
 client = Client(api_key='', api_secret='')
@@ -67,6 +68,15 @@ def get_data(interval):
     df['time'] = pd.to_datetime(df['timestamp'], unit='ms')
     return df[['time', 'close', 'high', 'low']]
 
+def check_last_3_candles_and_alert():
+    df = get_data('3m')
+    last3 = df[-3:]
+    greens = [row['close'] > row['low'] for _, row in last3.iterrows()]
+    if all(greens):
+        try:
+            playsound('/a.mp3')
+        except Exception as e:
+            print(f"Error al reproducir sonido: {e}")
 
 def find_local_extrema(prices):
     maxima = []
@@ -217,6 +227,7 @@ def update_loop():
     while True:
         time.sleep(60)
         root.after(0, update_current_view)
+        root.after(0, lambda: [update_current_view(), check_last_3_candles_and_alert()])
 
 
 update_current_view()
